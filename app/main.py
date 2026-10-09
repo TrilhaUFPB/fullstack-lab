@@ -3,7 +3,7 @@
 from datetime import date
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 
 class EventInput(BaseModel):
@@ -12,6 +12,13 @@ class EventInput(BaseModel):
     title: str
     date: date
     capacity: int
+
+    @field_validator("title")
+    @classmethod
+    def title_nao_vazio(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("O título não pode ser vazio")
+        return value
 
 
 def create_app() -> FastAPI:
@@ -35,7 +42,10 @@ def create_app() -> FastAPI:
         # Atividade 1: valide título e capacidade, gere um ID e guarde o
         # evento em `events`. A resposta deve conter id, title, date e capacity.
         # Os testes mostram os casos de sucesso e de entrada inválida.
-        raise HTTPException(status_code=501, detail="Cadastro ainda não implementado")
+        event_id = max(events, default=0)
+        event = {"id": event_id, **data.model_dump()}
+        events[event_id] = event
+        return event
 
     return app
 
