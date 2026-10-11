@@ -11,7 +11,7 @@ class EventInput(BaseModel):
 
     title: str
     date: date
-    capacity: int
+    capacity: int = Field(gt=0)
 
     @field_validator("title")
     @classmethod
@@ -42,7 +42,7 @@ def create_app() -> FastAPI:
         # Atividade 1: valide título e capacidade, gere um ID e guarde o
         # evento em `events`. A resposta deve conter id, title, date e capacity.
         # Os testes mostram os casos de sucesso e de entrada inválida.
-        event_id = max(events, default=0)
+        event_id = max(events, default=0) + 1
         event = {"id": event_id, **data.model_dump()}
         events[event_id] = event
         return event
